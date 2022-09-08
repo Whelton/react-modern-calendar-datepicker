@@ -28,6 +28,7 @@ const Calendar = ({
   shouldHighlightWeekends,
   renderFooter,
   customDaysClassName,
+  onActiveDateChanged,
 }) => {
   const calendarElement = useRef(null);
   const [mainState, setMainState] = useState({
@@ -70,6 +71,19 @@ const Calendar = ({
   const activeDate = mainState.activeDate
     ? shallowClone(mainState.activeDate)
     : getComputedActiveDate();
+
+  const previousActiveDate = useRef(activeDate);
+  useEffect(() => {
+    if (
+      onActiveDateChanged &&
+      (activeDate.year !== previousActiveDate.current.year ||
+        activeDate.month !== previousActiveDate.current.month ||
+        activeDate.day !== previousActiveDate.current.day)
+    ) {
+      previousActiveDate.current = activeDate;
+      onActiveDateChanged(activeDate);
+    }
+  }, [activeDate]);
 
   const weekdays = weekDaysList.map(weekDay => (
     <abbr key={weekDay.name} title={weekDay.name} className="Calendar__weekDay">
